@@ -49,6 +49,10 @@ if(HS4_DISTRIBUCION)
     endforeach()
     set(PSX_PRELOADED_MODS "${_hs4_mods}")
     message(STATUS "High Speed 4 distribucion: mods ${HS4_MODS_DISTRIBUCION} (sin nfshs.unlocks ni nfshs.4p)")
+    # Las versiones publicas de PSXRecomp no pueden llevar los mods de carga rapida del framework.
+    set(_hs4_excluir EXCLUDE_BUILTIN_MODS psx.enhancement.cd-speed psx.enhancement.fast-loading)
+else()
+    set(_hs4_excluir "")
 endif()
 if(NOT IS_DIRECTORY "${PSX_PRELOADED_MODS}")
     set(PSX_PRELOADED_MODS "NONE")
@@ -72,6 +76,7 @@ psxrecomp_add_game_runtime(psx-runtime
     GEN_MARKER "generated/SLUS_008.26_dispatch.c"
     GEN_FULL_GLOB "generated/SLUS_008.26_full_*.c"
     CODEGEN_SETUP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/codegen_setup.c"
+    ${_hs4_excluir}
 )
 
 # Stage runtime configs next to the exe for direct build/ launches. Only copy
