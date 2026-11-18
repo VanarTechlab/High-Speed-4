@@ -6,7 +6,7 @@
 
 **High Speed 4** es un port para PC (Windows) de *Need for Speed: High Stakes* de PlayStation,
 hecho por **Vanar (VanarTechlab)** con la recompilación estática de
-[PSXRecomp](https://github.com/mstan/psxrecomp) y el lanzador
+[PSXRecomp](https://github.com/RetroPortingToolKit/psxrecomp) y el lanzador
 [recomp-ui](https://github.com/RetroPortingToolKit/recomp-ui).
 
 No es un emulador: el código del juego de PlayStation se traduce a código nativo de PC.

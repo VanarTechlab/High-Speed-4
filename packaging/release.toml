@@ -12,8 +12,9 @@ version_file = "VERSION"
 [build]
 cmake_args = ["-DPSX_SDL_BACKEND=SDL3", "-DPSX_PGXP_VARIANT=OFF", "-DHS4_DISTRIBUCION=ON"]
 # HS4_DISTRIBUCION: sin el mod de desbloqueos (nfshs.unlocks) ni el de 4 jugadores (nfshs.4p).
-# Selective PGO defaults on for supported native GNU/Ninja toolchains. Do not
-# add per-title profile paths or reuse another build's training data.
+# PGO desactivado: el arranque de entrenamiento (10 s, oculto) termina con exit 1 en este juego,
+# y en desarrollo ya compilamos siempre con --no-pgo. El juego va a 60 fps sin PGO.
+selective_pgo = false
 
 [aot]
 mode = "none"
