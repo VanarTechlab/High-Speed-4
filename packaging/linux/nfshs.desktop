@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=NFS High Stakes
+Exec=NFS_High_Stakes__Recompiled
+Icon=nfshs
+Categories=Game;
+Terminal=false

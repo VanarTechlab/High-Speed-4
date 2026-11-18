@@ -1,0 +1,50 @@
+--- a/mods/builtin/packages/psx.enhancement.internal-resolution/1.0.0/manifest.toml	2026-11-17 08:33:56.111354673 +0000
++++ b/mods/builtin/packages/psx.enhancement.internal-resolution/1.0.0/manifest.toml	2026-11-17 08:33:56.132450300 +0000
+@@ -23,7 +23,7 @@
+ feature = "internal-resolution"
+ id = "resolution"
+ label = "Internal resolution"
+-description = "1x is native; 4x is the default. Fixed scales through 32x use the same factor for every title. Height presets, Match display, Auto and Game default remain available for saved choices. Hardware and memory limits may reduce the effective scale."
++description = "1x is native; 4x is the default. Height presets (720p..8K) pick the scale whose height reaches that resolution; Match display follows the window; Auto lowers the scale when the GPU falls behind. Fixed scales through 32x use the same factor for every title. Hardware and memory limits may reduce the effective scale."
+ group = "Visual"
+ type = "choice"
+ default = "4x"
+@@ -33,6 +33,38 @@
+ label = "Game default"
+ 
+ [[option.choice]]
++value = "720p"
++label = "720p"
++
++[[option.choice]]
++value = "1080p"
++label = "1080p"
++
++[[option.choice]]
++value = "1440p"
++label = "1440p"
++
++[[option.choice]]
++value = "4k"
++label = "4K"
++
++[[option.choice]]
++value = "5k"
++label = "5K"
++
++[[option.choice]]
++value = "8k"
++label = "8K"
++
++[[option.choice]]
++value = "display"
++label = "Match display"
++
++[[option.choice]]
++value = "auto"
++label = "Auto (lowers itself if the GPU can't keep up)"
++
++[[option.choice]]
+ value = "1x"
+ label = "1x (Native)"
+ 

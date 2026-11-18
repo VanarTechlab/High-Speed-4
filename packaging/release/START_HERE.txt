@@ -1,0 +1,21 @@
+High Speed 4 @VERSION@ - VanarTechlab
+
+[ES]
+1. Abre High Speed 4 (HighSpeed4.exe).
+2. Elige la imagen (.cue) de TU disco original de Need for Speed: High Stakes
+   (PlayStation, USA, SLUS-00826). No se incluye ningun disco.
+3. La primera vez se traduce y compila el codigo del juego desde tu disco:
+   puede tardar unos minutos y despues queda guardado.
+
+No hace falta BIOS: se incluye OpenBIOS (libre). Puedes usar tu propia BIOS si quieres.
+Controles, mods y resolucion: en el lanzador.
+Al actualizar, conserva tus tarjetas de memoria y tu configuracion.
+
+High Speed 4 es gratis y no esta afiliado a Electronic Arts ni a Sony.
+Licencias: LICENCIAS.md, LICENSE y la carpeta licenses.
+
+[EN]
+Open HighSpeed4.exe and pick the .cue of YOUR original Need for Speed: High Stakes disc
+(PlayStation, USA, SLUS-00826). No disc or retail BIOS is included (OpenBIOS is bundled).
+The first launch translates and compiles the game code from your disc.
+Free; not affiliated with Electronic Arts or Sony.

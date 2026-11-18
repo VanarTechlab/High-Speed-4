@@ -1,0 +1,44 @@
+{
+  "schema": "psxrecomp AOT methods v1",
+  "game_id": "SLUS-00826",
+  "_comentario": "High Speed 4: solo hechos sobre el disco original (archivos, direcciones, huellas). Ningun byte del juego. El codigo se compila en el PC del jugador desde SU disco.",
+  "disc_hashes": {
+    "sha256": "f0436c8dc7cf13d73974d75c2cc20bc35543726a5ca5bf51f88f961f6a28fe5d"
+  },
+  "images": [
+    {
+      "method": "fixed_address_extents",
+      "allow_missing": true,
+      "_comentario": "Motor del juego. MEDIDO: en NFS4.EXE 0x80010000-0x80055000 son todo ceros (ahi va FRONT.BIN u otros overlays) y el codigo acaba en 0x8010D930 (ultimo jr ra 0x8010D928); de ahi a 0x8013F800 son datos. Se declara solo 0x80055000-0x8010D930.",
+      "extents": [
+        {
+          "file": "NFS4.EXE",
+          "file_offset": "0x800",
+          "base": "0x80010000",
+          "address": "0x80055000",
+          "size": "0xb8930",
+          "load_addr": "0x80055000",
+          "sha256": "9fcff0299b31793663ea1932f77e265edee58140248eb1ff1cdbfd9330c1ed91"
+        }
+      ]
+    },
+    {
+      "method": "fixed_address_files",
+      "files": [
+        "FRONT.BIN"
+      ],
+      "load_addr": "0x80010000",
+      "_comentario": "Menus. MEDIDO: las capturas 0x80028000/0x8002C000/0x80037000/0x80041000 son FRONT.BIN+0x18000/+0x1C000/+0x27000/+0x31000 -> base 0x80010000. El extractor generico no lo detecta (no es PS-X EXE: empieza por 'SimpleMem ... FE Data Stream'), por eso allow_missing. MEDIDO: hay codigo MIPS en 0x0-0x44000 del archivo.",
+      "allow_missing": true
+    }
+  ],
+  "expected_records": 2,
+  "generic_exclude_files": [
+    {
+      "files": [
+        "NFS4.EXE"
+      ],
+      "reason": "Lo declara el perfil con su tramo de codigo exacto (fixed_address_extents); el EXE entero mete datos como codigo."
+    }
+  ]
+}

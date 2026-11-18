@@ -1,0 +1,558 @@
+# Autofilled by tools/new_project_layout/probe_disc.py from your legal dump.
+# Review before shipping. Runtime quirks / overlay seeds still need hand work.
+
+[game]
+name = "High Speed 4"
+id = "SLUS-00826"
+players = 2
+exe = "disc/SLUS_008.26"
+disc = "/mnt/d/Proyectos/NFS4/disco/Need for Speed - High Stakes (USA).cue"
+load_address = "0x801D0000"
+entry_pc = "0x801D0404"
+text_size = "0x00007000"
+stack_base = "0x801FFFF0"
+# High Speed 4: solo el disco original USA (sha256 de la pista de datos .bin, medido 2026-11-18).
+required_disc_sha256 = ["f0436c8dc7cf13d73974d75c2cc20bc35543726a5ca5bf51f88f961f6a28fe5d"]
+
+# Digests are for data Track 01 (first BINARY FILE / TRACK 01).
+[prepare_disc]
+out_dir = "disc"
+bin_name = "Need for Speed - High Stakes (USA).bin"
+cue_name = "Need for Speed - High Stakes (USA).cue"
+boot_exe = "SLUS_008.26"
+known_sizes = [733165440]
+known_md5 = [
+  "4080f2fe29a179a6f20c8581dcdd3fd2",
+]
+known_sha1 = [
+  "72e5fc9254903797a08d56babbef689e30514fb8",
+]
+known_crc32 = [
+  "81456f7b",
+]
+
+[recompiler]
+seeds = "seeds/ghidra_funcs.txt"
+out_dir = "generated"
+strict = true
+
+[runtime]
+window_title = "High Speed 4"
+memcard_dir = "saves"
+overlay_cache = true
+
+[video]
+renderer = "opengl"
+aspect_ratio = "4:3"
+# Hilo de dibujo aparte: necesario con texturas HD (el dibujo extra no le quita tiempo al juego/audio).
+render_thread = true
+
+# Widescreen (activated by the nfshs.widescreen mod in the launcher).
+# native_wide = false -> GTE X-squash (DuckStation-style wider FOV) instead of
+# native-wide, which needs per-game cull work before it shows extra view.
+[widescreen]
+native_wide = false
+# NFS4 is a 3D game: treat frames with GTE projection as gameplay (stretch +
+# squash) instead of waiting for sprite tags, which this title never emits.
+gte_game_mode = true
+# Game-state word found by RAM diff (menus = 3, race and race pause = 1).
+# When set, this decides gameplay vs 4:3 menus instead of the GTE heuristic,
+# so menus stay native 4:3 (no HUD squash on menu text) and pausing a race
+# no longer drops to 4:3.
+gameplay_state_addr = "0x8010FB90"
+gameplay_state_values = ["0x00000001"]
+# Keep HUD widgets (timer, speedometer, minimap) at native proportions.
+# OFF 2026-11-16: trataba como HUD los letreros/paredes cercanos de la capa delantera
+# (panel separado de sus patas, manchas violetas). El HUD ya lo colocan el mod
+# nfshs.widescreen y el parche de gpu.c: con OFF se ve proporcionado y en su sitio.
+auto_ui_squash = false
+# auto_ui_anchor = "in_place" was tried: it split the timer icon from its
+# digits and the minimap brackets from the map, so keep the default "edges".
+
+# Note: with native_wide = false (GTE X-squash) the whole wide view is projected
+# into the original 0..W screen, so the game's own screen-space rejects stay
+# correct and [widescreen.cull] screen-X sites have nothing to fix. The
+# remaining edge pop-in comes from a pre-projection (3D) visibility test.
+
+# Remove the original PS1 slowdowns: each MIPS instruction costs 1/N of its
+# PS1 time, so the game never runs out of frame time. VBlank-paced games keep
+# their speed (NFS4 targets 30 fps). 1 = faithful.
+# Side visibility (4 functions: track blocks 0x8007E71C, track sub-blocks
+# 0x800C7288, scenery objects 0x800C9DFC / 0x800CA618): each one drops a piece
+# when all 4 camera-space corners have x > z (right) or -x > z (left), a fixed
+# 90-degree field. Forcing those compares to "keep" ([[widescreen.cull.keep]])
+# also drew pieces almost behind the camera, whose vertices saturate the GTE
+# and showed as stretched bands. Instead the [[recompiler.patch]] list at the
+# end widens the test to x/4 > z (about 152 degrees; x/2 still lost side
+# objects). Vertices stay inside the GTE screen range, so no bands.
+[timing]
+# 2 = el juego cree tener una CPU el doble de rapida: sin ralentizaciones con muchos coches.
+# Necesita los overlays con native CPU spans (compile_overlays.py) para no saturar el PC.
+guest_cycle_scale = 2
+# Solo en carrera (y su pausa): misma direccion que gameplay_state_addr. Menus/videos en 1.
+guest_cycle_scale_gate = [ { addr = 0x8010FB90, value = 1 } ]
+# Contabilidad agrupada (mismos tiempos para el juego, algo menos de trabajo). Probado 2026-11-15.
+guest_cycle_scale_batch = true
+
+[controller]
+# NFS4 reads DualShock analog steering; the pad otherwise boots digital and the
+# game never requests analog itself. Lock it so the left stick is a real axis.
+default_mode = "analog"
+lock_mode = true
+
+# Online mount gate: digests + track count + optional TOC fingerprint
+# (see docs/NETPLAY.md).
+[netplay]
+require_cue = true
+required_tracks = 1
+required_disc_fp = "3b9c3df2d89836012828fddb439794c8469f6ea671dad06768304c51ca21c547"
+
+# Campo de vision lateral x2 en los tests de esquinas (generado por genpatch.py)
+[[recompiler.patch]]
+id = "nfshs_fov_blk_R0"
+address = "0x8007E8E0"
+expected = "0x00000000"
+replacement = "0x00031883"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_R1"
+address = "0x8007E8F8"
+expected = "0x00000000"
+replacement = "0x00031883"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_R2"
+address = "0x8007E910"
+expected = "0x00000000"
+replacement = "0x00031883"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_R3"
+address = "0x8007E928"
+expected = "0x00000000"
+replacement = "0x00031883"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L0a"
+address = "0x8007E940"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L0b"
+address = "0x8007E944"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L0c"
+address = "0x8007E948"
+expected = "0x10600013"
+replacement = "0x04610013"
+note = "dentro si z+x/4>=0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L1a"
+address = "0x8007E958"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L1b"
+address = "0x8007E95C"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L1c"
+address = "0x8007E960"
+expected = "0x1060000D"
+replacement = "0x0461000D"
+note = "dentro si z+x/4>=0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L2a"
+address = "0x8007E970"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L2b"
+address = "0x8007E974"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L2c"
+address = "0x8007E978"
+expected = "0x10600007"
+replacement = "0x04610007"
+note = "dentro si z+x/4>=0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L3a"
+address = "0x8007E988"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L3b"
+address = "0x8007E98C"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_blk_L3c"
+address = "0x8007E990"
+expected = "0x14600032"
+replacement = "0x04600032"
+note = "fuera si z+x/4<0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_R0"
+address = "0x800C7450"
+expected = "0x00000000"
+replacement = "0x00031843"
+note = "derecha: x/2 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_R1"
+address = "0x800C7468"
+expected = "0x00000000"
+replacement = "0x00031843"
+note = "derecha: x/2 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_R2"
+address = "0x800C7480"
+expected = "0x00000000"
+replacement = "0x00031843"
+note = "derecha: x/2 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_R3"
+address = "0x800C7498"
+expected = "0x00000000"
+replacement = "0x00031843"
+note = "derecha: x/2 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L0a"
+address = "0x800C74B0"
+expected = "0x00021023"
+replacement = "0x00021043"
+note = "izquierda: x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L0b"
+address = "0x800C74B4"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L0c"
+address = "0x800C74B8"
+expected = "0x10600013"
+replacement = "0x04610013"
+note = "dentro si z+x/2>=0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L1a"
+address = "0x800C74C8"
+expected = "0x00021023"
+replacement = "0x00021043"
+note = "izquierda: x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L1b"
+address = "0x800C74CC"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L1c"
+address = "0x800C74D0"
+expected = "0x1060000D"
+replacement = "0x0461000D"
+note = "dentro si z+x/2>=0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L2a"
+address = "0x800C74E0"
+expected = "0x00021023"
+replacement = "0x00021043"
+note = "izquierda: x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L2b"
+address = "0x800C74E4"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L2c"
+address = "0x800C74E8"
+expected = "0x10600007"
+replacement = "0x04610007"
+note = "dentro si z+x/2>=0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L3a"
+address = "0x800C74F8"
+expected = "0x00021023"
+replacement = "0x00021043"
+note = "izquierda: x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L3b"
+address = "0x800C74FC"
+expected = "0x0062182A"
+replacement = "0x00621821"
+note = "izquierda: z+x/2"
+
+[[recompiler.patch]]
+id = "nfshs_fov_sub_L3c"
+address = "0x800C7500"
+expected = "0x146001A7"
+replacement = "0x046001A7"
+note = "fuera si z+x/2<0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_R0"
+address = "0x800CA0E0"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_R1"
+address = "0x800CA0F8"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_R2"
+address = "0x800CA110"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_R3"
+address = "0x800CA128"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L0a"
+address = "0x800CA140"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L0b"
+address = "0x800CA144"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L0c"
+address = "0x800CA148"
+expected = "0x14400013"
+replacement = "0x1C400013"
+note = "dentro si z+x/4>0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L1a"
+address = "0x800CA158"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L1b"
+address = "0x800CA15C"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L1c"
+address = "0x800CA160"
+expected = "0x1440000D"
+replacement = "0x1C40000D"
+note = "dentro si z+x/4>0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L2a"
+address = "0x800CA170"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L2b"
+address = "0x800CA174"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L2c"
+address = "0x800CA178"
+expected = "0x14400007"
+replacement = "0x1C400007"
+note = "dentro si z+x/4>0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L3a"
+address = "0x800CA188"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L3b"
+address = "0x800CA18C"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objA_L3c"
+address = "0x800CA190"
+expected = "0x1040006B"
+replacement = "0x1840006B"
+note = "fuera si z+x/4<=0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_R0"
+address = "0x800CA7BC"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_R1"
+address = "0x800CA7D4"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_R2"
+address = "0x800CA7EC"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_R3"
+address = "0x800CA804"
+expected = "0x00000000"
+replacement = "0x00021083"
+note = "derecha: x/4 (FOV x4)"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L0a"
+address = "0x800CA81C"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L0b"
+address = "0x800CA820"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L0c"
+address = "0x800CA824"
+expected = "0x14400013"
+replacement = "0x1C400013"
+note = "dentro si z+x/4>0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L1a"
+address = "0x800CA834"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L1b"
+address = "0x800CA838"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L1c"
+address = "0x800CA83C"
+expected = "0x1440000E"
+replacement = "0x1C40000E"
+note = "dentro si z+x/4>0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L2a"
+address = "0x800CA84C"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L2b"
+address = "0x800CA850"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L2c"
+address = "0x800CA854"
+expected = "0x14400008"
+replacement = "0x1C400008"
+note = "dentro si z+x/4>0"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L3a"
+address = "0x800CA864"
+expected = "0x00021023"
+replacement = "0x00021083"
+note = "izquierda: x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L3b"
+address = "0x800CA868"
+expected = "0x0043102A"
+replacement = "0x00431021"
+note = "izquierda: z+x/4"
+
+[[recompiler.patch]]
+id = "nfshs_fov_objB_L3c"
+address = "0x800CA86C"
+expected = "0x10400150"
+replacement = "0x18400150"
+note = "fuera si z+x/4<=0"
+

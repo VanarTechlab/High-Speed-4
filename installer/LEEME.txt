@@ -1,0 +1,93 @@
+HIGH SPEED 4 v@VERSION@ - Need for Speed: High Stakes para PC
+Por Vanar (VanarTechlab) - https://www.youtube.com/@VanarTechlab
+
+High Speed 4 es GRATUITO y de LIBRE DISTRIBUCION. Si pagaste por el, te han estafado.
+Proyecto no oficial hecho por un fan. No tiene relacion con Electronic Arts ni con Sony.
+NO incluye el juego, ni codigo ni arte de EA, ni BIOS de Sony: necesitas tu propio disco original
+de Need for Speed: High Stakes para PlayStation (version USA, SLUS-00826) volcado a .cue + .bin.
+
+QUE ES
+Un port para PC (Windows) del juego de PlayStation hecho con recompilacion estatica (PSXRecomp):
+no es un emulador, el codigo del juego se traduce a codigo nativo de PC. Esa traduccion se hace
+en TU PC y desde TU disco durante la instalacion.
+
+NOVEDADES DE LA v@VERSION@ (primera version)
+- Hasta 60 imagenes por segundo en carrera, sin las ralentizaciones de la PlayStation.
+- Pantalla panoramica 16:9 real (mas campo de vision, HUD ajustado).
+- Resolucion interna alta (1080p, 4K...).
+- Jukebox: elige el tema musical desde el menu de pausa.
+- Texturas HD opcionales: pack descargable aparte o creadas desde tu partida, con "Texturas HD.exe".
+
+QUE NECESITAS
+- Windows 10/11 de 64 bits y una tarjeta grafica con OpenGL 3.3.
+- Tu disco original de Need for Speed: High Stakes (PlayStation, USA, SLUS-00826) en .cue + .bin
+  (una sola pista de datos, el volcado normal). Otras versiones o imagenes modificadas no valen.
+- Internet durante la instalacion, para descargar el compilador clang (gratuito).
+- No hace falta BIOS de PlayStation: se incluye OpenBIOS (libre).
+
+INSTALACION
+1. Descomprime el zip entero en una carpeta.
+2. Abre "Instalar High Speed 4.exe".
+3. Pulsa "Buscar..." y elige el archivo .cue de tu disco.
+4. Elige donde instalar (por defecto, tu carpeta de programas de usuario).
+5. Deja marcada "Descargar el compilador y preparar el juego ahora" y pulsa INSTALAR.
+   Comprueba tu disco, copia el juego, descarga clang y traduce el codigo desde tu disco
+   (unos minutos). Al terminar te pregunta si quieres jugar.
+   Si ya tenias una version anterior, instala encima: tus partidas y ajustes se conservan.
+
+Tambien hay "instalar_hs4.exe" (lo mismo por consola):
+    instalar_hs4.exe DISCO.cue CARPETA_DESTINO [--sin-preparar] [--sin-accesos]
+Y en la carpeta del juego, "Preparar juego.bat" vuelve a preparar el codigo desde tu disco.
+
+TEXTURAS HD (opcional)
+Con "Texturas HD.exe" (en la carpeta del juego, con el juego cerrado) hay dos formas:
+A) Recomendado: descarga aparte el pack de texturas HD de High Speed 4 (HighSpeed4_TexturasHD_v@VERSION@.zip,
+   en vanartechlab.pages.dev), pulsa "A) Instalar pack descargado" y elige el zip. Listo.
+B) Crearlas desde TU partida (sin descargar el pack; necesita una tarjeta grafica con Vulkan):
+   1. Pulsa "B1. Recoger texturas", abre High Speed 4, juega lo que quieras y CIERRA el juego
+      (las texturas se guardan al salir).
+   2. Pulsa "B2. Crear e instalar texturas HD": se convierten con IA (Real-ESRGAN) y se instalan.
+   Repitelo cuando juegues algo nuevo: solo se convierten las texturas nuevas.
+En los dos casos, al abrir el juego ya se ve en HD. "Desactivar HD" vuelve a las texturas
+originales sin borrar nada.
+
+CONTROLES
+Se configuran en el lanzador (Controles). Por defecto, cada boton de PlayStation es:
+  PlayStation   Mando (Xbox)        Teclado (jugador 1)
+  Direccion     Palanca / cruceta   Flechas
+  Cruz (X)      A                   X
+  Circulo       B                   S
+  Cuadrado      X                   Z
+  Triangulo     Y                   A
+  L1 / R1       LB / RB             Q / W
+  L2 / R2       LT / RT             E / R
+  START         Start               Enter
+  SELECT        Back                Mayus derecha
+Lo que hace cada boton en carrera se cambia en las opciones del propio juego.
+
+NOTAS
+- Las tarjetas de memoria se guardan en la carpeta saves del juego.
+- La pantalla panoramica y el Jukebox se activan o desactivan en el lanzador (Mods).
+- Si algo falla al preparar, el juego funciona igual: ira compilando el codigo mientras juegas
+  (puede ir a tirones la primera vez). Puedes repetir la preparacion con "Preparar juego.bat".
+- El codigo traducido y compilado desde tu disco (carpeta cache) es solo para tu uso personal:
+  no lo compartas.
+
+LICENCIAS
+Codigo propio de High Speed 4: MIT. Hecho con PSXRecomp (PolyForm Noncommercial 1.0.0 + permiso para
+donaciones y publicidad) y recomp-ui (MIT); usa OpenBIOS (MIT) y el compilador clang (LLVM, Apache 2.0).
+Need for Speed y High Stakes son marcas de Electronic Arts; PlayStation es una marca de Sony.
+Ver la carpeta LICENCIAS (incluye el codigo del instalador) y juego\licenses.
+Codigo fuente: https://github.com/VanarTechlab/High-Speed-4
+
+Donaciones (voluntarias, no desbloquean nada): https://vanar-techlab-shop.fourthwall.com
+
+---------------------------------------------------------------------------------------------
+ENGLISH (short)
+Free, non-commercial PC (Windows) port of the PlayStation game Need for Speed: High Stakes, made
+with PSXRecomp static recompilation. Unofficial fan project, not affiliated with Electronic Arts or
+Sony. No game, EA code/art or Sony BIOS included: bring your own original NTSC-U disc (SLUS-00826)
+as .cue/.bin; the game code is translated and compiled on your PC from your disc during install.
+Unzip, run "Instalar High Speed 4.exe", pick your .cue and the folder, press INSTALAR.
+Up to 60 fps, true 16:9 widescreen, high internal resolution, music jukebox, optional HD textures
+(separate download, or made from your own play session) installed with "Texturas HD.exe".

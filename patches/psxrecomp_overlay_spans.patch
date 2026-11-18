@@ -1,0 +1,47 @@
+--- a/tools/compile_overlays.py
++++ b/tools/compile_overlays.py
+@@ -21,6 +21,15 @@
+ """
+ 
+ import argparse
++import os as _nfs_os
++def _nfs_overlay_spans_on():
++    # ON by default (NFS4: needed for 30 fps with guest_cycle_scale 2).
++    # Off with PSX_OVERLAY_SPANS=0 or overlay_spans.off next to this script.
++    e = _nfs_os.environ.get('PSX_OVERLAY_SPANS')
++    if e in ('0', '1'):
++        return e == '1'
++    return not _nfs_os.path.exists(_nfs_os.path.join(
++        _nfs_os.path.dirname(_nfs_os.path.abspath(__file__)), 'overlay_spans.off'))
+ import array
+ import itertools
+ import io
+@@ -6280,6 +6289,10 @@
+         # PGXP flavor bit (overlay_api.h PSX_OVERLAY_FLAVOR_PGXP): arm the
+         # PGXP_*() hook macros the emitter writes into every overlay C.
+         *(['-DPSX_PGXP=1'] if int(flavor) & 2 else []),
++        # NFS4 (Vanar): native CPU spans in overlays -- one cycle charge per
++        # span instead of per-instruction psx_cyc_step/icache/load-timing
++        # callbacks. On by default (see _nfs_overlay_spans_on).
++        *(['-DPSX_NATIVE_CPU_SPANS=1'] if _nfs_overlay_spans_on() else []),
+         c_path,
+         '-o', out_dll,
+         *includes,
+--- a/runtime/include/overlay_dispatch_preamble.c.inc
++++ b/runtime/include/overlay_dispatch_preamble.c.inc
+@@ -109,6 +109,7 @@
+  * emits these; forward to the runtime's real impls so native overlays charge cycles on
+  * the SAME timeline as the interp/BIOS (a local copy would diverge). NULL-guarded so a
+  * v9 DLL stays safe on a host that predates a given callback. */
++#if !(defined(PSX_NATIVE_CPU_SPANS) && PSX_NATIVE_CPU_SPANS) /* NFS4 spans guard: psx_native_span.h maps these */
+ uint32_t psx_cyc_load_word(CPUState *cpu, uint32_t addr, uint32_t rt, uint32_t reg_mask) {
+     overlay_flush_cycles();
+     return g_cbs.cyc_load_word ? g_cbs.cyc_load_word(cpu, addr, rt, reg_mask) : cpu->read_word(addr);
+@@ -129,6 +130,7 @@
+     overlay_flush_cycles();
+     if (g_cbs.icache_fetch) g_cbs.icache_fetch(cpu, addr);
+ }
++#endif /* NFS4 spans guard */
+ void psx_muldiv_set(CPUState *cpu, uint32_t latency) {
+     overlay_flush_cycles();
+     if (g_cbs.muldiv_set) g_cbs.muldiv_set(cpu, latency);

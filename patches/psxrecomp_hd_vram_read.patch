@@ -1,0 +1,21 @@
+--- a/runtime/src/gpu_gl_renderer.c	2026-11-17 01:51:57.593533691 +0000
++++ b/runtime/src/gpu_gl_renderer.c	2026-11-17 01:51:57.709644800 +0000
+@@ -14678,7 +14678,17 @@
+     GL_RT_SYNC("render_display_hires"); return glb_render_display_hires(o, p, dx, dy, dw, dh); }
+ static void rtb_vram_write(int x, int y, uint16_t px) {
+     RTH_DIRECT_OR(RTH_REC(RTH_VRAM_WRITE, 0, x, y, px)); glb_vram_write(x, y, px); }
+-static uint16_t rtb_vram_read(int x, int y) { GL_RT_SYNC("vram_read"); return glb_vram_read(x, y); }
++static uint16_t rtb_vram_read(int x, int y) {
++    /* NFS4 HD: under HD native authority the render thread's CPU raster keeps
++     * its private copy exact, so a guest readback (GPUREAD, mask check) only
++     * needs the queue drained, not the context taken for the rest of the
++     * frame (which moved all drawing back onto the emulation thread). */
++    if (s_rth_on && s_hd_native_authority && s_rth_vram_priv && !rt_on_render_thread() &&
++        !rt_held() && !gpu_display_is_depth24()) {
++        rt_drain();
++        return s_rth_vram_priv[(size_t)(y & (VRAM_H - 1)) * VRAM_W + (size_t)(x & (VRAM_W - 1))];
++    }
++    GL_RT_SYNC("vram_read"); return glb_vram_read(x, y); }
+ static void rtb_vram_transfer_in(int x, int y, int w, int h, const uint16_t *d) {
+     if (rth_record_mode()) {
+         size_t n = (w > 0 && h > 0) ? (size_t)w * (size_t)h : 0;

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "NFS High Stakes",
+  "system": "PS1",
+  "type": "recomp",
+  "toolchain": "psxrecomp",
+  "status": "exploring",
+  "project": "NFS High Stakes Recomp",
+  "original": {
+    "region": "USA",
+    "serial": "SLUS-00826"
+  }
+}

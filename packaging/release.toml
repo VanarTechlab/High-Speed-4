@@ -1,0 +1,67 @@
+# Shared optimized release builder; run scripts/package_release.sh --channel public.
+# Requires the title disc for generation and fresh private boot training.
+schema = 1
+
+[product]
+launcher_boxart = "launcher_assets/img/boxart.tga"
+name = "HighSpeed4"
+display_name = "High Speed 4"
+exe_name = "HighSpeed4"
+version_file = "VERSION"
+
+[build]
+cmake_args = ["-DPSX_SDL_BACKEND=SDL3", "-DPSX_PGXP_VARIANT=OFF", "-DHS4_DISTRIBUCION=ON"]
+# HS4_DISTRIBUCION: sin el mod de desbloqueos (nfshs.unlocks) ni el de 4 jugadores (nfshs.4p).
+# Selective PGO defaults on for supported native GNU/Ninja toolchains. Do not
+# add per-title profile paths or reuse another build's training data.
+
+[aot]
+mode = "none"
+# Add a reviewed title AOT profile when one exists; the generic scaffold does
+# not invent title-specific overlay coverage.
+
+[overlay_toolchain]
+ship = true
+
+[payload]
+start_here = "packaging/release/START_HERE.txt"
+files = [
+  "README.md", "LICENSE", "LICENCIAS.md",
+  # Preparar el juego en el PC del jugador desde SU disco (perfil AOT, sin bytes del juego):
+  { from = "installer/Preparar juego.bat", to = "Preparar juego.bat" },
+  { from = "installer/hs4_preparar.py", to = "hs4_aot/hs4_preparar.py" },
+  { from = "aot/overlays.json", to = "hs4_aot/overlays.json" },
+  # Kit HD: el jugador convierte SUS texturas recogidas (sin imagenes del juego en la descarga)
+  { from = "installer/bin/Texturas HD.exe", to = "Texturas HD.exe" },
+  { from = "installer/bin/texturas_hd.exe", to = "texturas_hd.exe" },
+  { from = "installer/hd_kit/fondo.bmp", to = "hd_kit/fondo.bmp" },
+  { from = "installer/hd_kit/decisiones.txt", to = "hd_kit/decisiones.txt" },
+  { from = "installer/hd_kit/excluidas.txt", to = "hd_kit/excluidas.txt" },
+  { from = "installer/hd_kit/LICENCIAS_kit_HD.txt", to = "hd_kit/LICENCIAS_kit_HD.txt" },
+  { from = "installer/hd_kit/realesrgan/realesrgan-ncnn-vulkan.exe", to = "hd_kit/realesrgan/realesrgan-ncnn-vulkan.exe" },
+  { from = "installer/hd_kit/realesrgan/vcomp140.dll", to = "hd_kit/realesrgan/vcomp140.dll" },
+  { from = "installer/hd_kit/modelo/realesrgan-x4plus-anime.bin.modelo", to = "hd_kit/realesrgan/models/realesrgan-x4plus-anime.bin.modelo" },
+  { from = "installer/hd_kit/modelo/realesrgan-x4plus-anime.param", to = "hd_kit/realesrgan/models/realesrgan-x4plus-anime.param" },
+  { from = "psxrecomp/tools/aligned_lzss_banks.py", to = "hs4_aot/psxrecomp/tools/aligned_lzss_banks.py" },
+  { from = "psxrecomp/tools/aot_overlay_pipeline.py", to = "hs4_aot/psxrecomp/tools/aot_overlay_pipeline.py" },
+  { from = "psxrecomp/tools/aot_overlay_spike/extract_generic.py", to = "hs4_aot/psxrecomp/tools/aot_overlay_spike/extract_generic.py" },
+  { from = "psxrecomp/tools/audit_aot_cache.py", to = "hs4_aot/psxrecomp/tools/audit_aot_cache.py" },
+  { from = "psxrecomp/tools/bpe_container.py", to = "hs4_aot/psxrecomp/tools/bpe_container.py" },
+  { from = "psxrecomp/tools/compile_overlays.py", to = "hs4_aot/psxrecomp/tools/compile_overlays.py" },
+  { from = "psxrecomp/tools/counted_mips_relocations.py", to = "hs4_aot/psxrecomp/tools/counted_mips_relocations.py" },
+  { from = "psxrecomp/tools/extract_overlays.py", to = "hs4_aot/psxrecomp/tools/extract_overlays.py" },
+  { from = "psxrecomp/tools/indexed_lzss_pack.py", to = "hs4_aot/psxrecomp/tools/indexed_lzss_pack.py" },
+  { from = "psxrecomp/tools/mips_tagged_relocations.py", to = "hs4_aot/psxrecomp/tools/mips_tagged_relocations.py" },
+  { from = "psxrecomp/tools/mod_package_images.py", to = "hs4_aot/psxrecomp/tools/mod_package_images.py" },
+  { from = "psxrecomp/tools/packed_sector_table.py", to = "hs4_aot/psxrecomp/tools/packed_sector_table.py" },
+  { from = "psxrecomp/tools/prepared_files.py", to = "hs4_aot/psxrecomp/tools/prepared_files.py" },
+  { from = "psxrecomp/tools/release_stage.py", to = "hs4_aot/psxrecomp/tools/release_stage.py" },
+  { from = "psxrecomp/tools/sector_extent_archive.py", to = "hs4_aot/psxrecomp/tools/sector_extent_archive.py" },
+]
+
+[linux]
+app_run = "packaging/linux/AppRun"
+desktop_file = "packaging/linux/nfshs.desktop"
+icon = "assets/psxrecomp.png"
+payload_dir = "nfshs"
+env_prefix = "HIGH_SPEED_4"

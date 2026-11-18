@@ -1,0 +1,38 @@
+format_version = 11
+id = "nfshs.widescreen"
+version = "0.1.0"
+name = "NFS High Stakes - Widescreen"
+author = "Vanar"
+description = "Pantalla panoramica: amplia el campo de vision (no estira la imagen)."
+license = "MIT"
+resolver = "declarative"
+
+[[target]]
+game_id = "SLUS-00826"
+
+[[feature]]
+id = "widescreen"
+name = "Widescreen"
+description = "Muestra mas escenario a los lados. Experimental."
+group = "Display"
+channel = "experimental"
+default_enabled = false
+
+[[option]]
+feature = "widescreen"
+id = "aspect"
+label = "Aspect ratio"
+type = "choice"
+default = "16:9"
+
+[[option.choice]]
+value = "16:9"
+label = "16:9"
+
+[[option.choice]]
+value = "21:9"
+label = "21:9"
+
+[[plugin]]
+feature = "widescreen"
+id = "nfshs.widescreen"

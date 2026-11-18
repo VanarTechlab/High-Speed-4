@@ -1,0 +1,106 @@
+format_version = 11
+id = "nfshs.jukebox"
+version = "0.1.0"
+name = "NFS High Stakes - Jukebox"
+author = "Vanar"
+description = "Elige el tema musical de las carreras. Cambialo en el menu del juego (con la carrera en pausa): al quitar la pausa suena el elegido."
+license = "MIT"
+resolver = "declarative"
+
+[[target]]
+game_id = "SLUS-00826"
+
+[[feature]]
+id = "jukebox"
+name = "Jukebox"
+description = "Tema musical en carrera. Aleatorio = como el juego original."
+group = "Audio"
+channel = "experimental"
+default_enabled = true
+
+[[option]]
+feature = "jukebox"
+id = "track"
+label = "Tema"
+type = "choice"
+default = "random"
+
+[[option.choice]]
+value = "random"
+label = "Aleatorio (original)"
+
+[[option.choice]]
+value = "01"
+label = "01. Amorphous Being - Saki Kaskas"
+
+[[option.choice]]
+value = "02"
+label = "02. Roll the Dice - Lunatic Calm"
+
+[[option.choice]]
+value = "03"
+label = "03. Rock This - Rom Di Prisco"
+
+[[option.choice]]
+value = "04"
+label = "04. Naked and Ashamed - Dylan Rhymes"
+
+[[option.choice]]
+value = "05"
+label = "05. War - Junkie XL"
+
+[[option.choice]]
+value = "06"
+label = "06. Bionic - Crispin Hands"
+
+[[option.choice]]
+value = "07"
+label = "07. I Am Electro - The Funk Lab"
+
+[[option.choice]]
+value = "08"
+label = "08. Liquid Plasma - Rom Di Prisco"
+
+[[option.choice]]
+value = "09"
+label = "09. Fight - Junkie XL"
+
+[[option.choice]]
+value = "10"
+label = "10. Clutch - DJ Icey"
+
+[[option.choice]]
+value = "11"
+label = "11. Bring That Beat Back - Rom Di Prisco"
+
+[[option.choice]]
+value = "12"
+label = "12. Dude in the Moon - Dastrix"
+
+[[option.choice]]
+value = "13"
+label = "13. Def Beat - Junkie XL"
+
+[[option.choice]]
+value = "14"
+label = "14. Cost of Freedom - The Experiment"
+
+[[option.choice]]
+value = "15"
+label = "15. Globular Cluster - Saki Kaskas"
+
+[[option.choice]]
+value = "16"
+label = "16. No Remorse - Junkie XL"
+
+[[option.choice]]
+value = "17"
+label = "17. Insanity Sauce - Surreal Madrid"
+
+[[option.choice]]
+value = "18"
+label = "18. Road Warrior - Rom Di Prisco"
+
+[[plugin]]
+feature = "jukebox"
+id = "nfshs.jukebox"

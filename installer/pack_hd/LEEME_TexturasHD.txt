@@ -1,0 +1,25 @@
+HIGH SPEED 4 - PACK DE TEXTURAS HD (opcional)
+Por Vanar (VanarTechlab) - https://www.youtube.com/@VanarTechlab
+
+Texturas del juego ampliadas con IA (Real-ESRGAN, modelo realesrgan-x4plus-anime) a partir de una
+copia original de Need for Speed: High Stakes (PlayStation, USA, SLUS-00826). 39.790 texturas.
+Solo funcionan con High Speed 4 y con ese disco.
+
+INSTALACION
+1. Instala primero High Speed 4 (descarga aparte).
+2. Abre "Texturas HD.exe" en la carpeta del juego, con el juego cerrado.
+3. Pulsa "A) Instalar pack descargado" y elige ESTE zip (no hace falta descomprimirlo).
+4. Abre el juego: ya se ve en HD. "Desactivar HD" vuelve a las texturas originales.
+
+AVISO
+Pack GRATUITO hecho por un fan para quien tenga el juego original. Proyecto no oficial, sin
+relacion con Electronic Arts ni con Sony. Las texturas originales son de Electronic Arts; Need for
+Speed y High Stakes son marcas de Electronic Arts. Si eres titular de derechos y quieres que se
+retire, escribe a VanarTechlab y se retirara.
+Si no quieres usar este pack, "Texturas HD.exe" tambien puede crear las texturas desde tu propia
+partida (opcion B, necesita una tarjeta grafica con Vulkan).
+
+ENGLISH (short)
+Optional HD texture pack for High Speed 4 (AI-upscaled with Real-ESRGAN from the original NTSC-U
+disc, SLUS-00826). Install High Speed 4 first, open "Texturas HD.exe", press "A) Instalar pack
+descargado" and pick this zip. Free fan project, not affiliated with Electronic Arts or Sony.

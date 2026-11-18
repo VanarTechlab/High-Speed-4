@@ -1,0 +1,2 @@
+Portada original de High Speed 4, generada con tools/hs4_portada.py (VanarTechlab, MIT).
+No contiene arte de Electronic Arts. PNG para el README/pagina; TGA para el lanzador (recomp-ui LAUNCHER_BOXART).

@@ -1,0 +1,43 @@
+--- a/runtime/src/cdrom.c
++++ b/runtime/src/cdrom.c
+@@ -336,6 +336,7 @@
+ 
+ int cdrom_get_setloc_lba(void) { return s_setloc_lba; }
+ 
++
+ /* The sector most recently DELIVERED into the data buffer -- as opposed to
+  * the game's last SetLoc. During a streaming read with continuations these
+  * differ, and attributing a DMA to the SetLoc stamp alone is how a transfer
+@@ -755,6 +756,23 @@
+ /* ISO reader */
+ static void* iso_handle = NULL;
+ 
++/* NFS4 (Vanar) - jukebox hook: a trusted mod may replace the 2048 user bytes
++ * of a data sector before delivery (the raw header/subheader of the requested
++ * sector are kept). The callback returns 1 when it filled `user`. */
++typedef int (*psx_cdrom_user_remap_fn)(int lba, uint8_t *user);
++static psx_cdrom_user_remap_fn s_user_remap;
++void psx_cdrom_set_user_remap(psx_cdrom_user_remap_fn fn) { s_user_remap = fn; }
++/* Read the 2048 user bytes of a Mode 2 Form 1 sector straight from the image. */
++int psx_cdrom_read_user_sector(int lba, uint8_t *out) {
++    uint8_t raw[RAW_SECTOR_SIZE];
++    if (!iso_handle || lba < 0) return 0;
++    if (iso_read_raw_sector(iso_handle, (uint32_t)lba, raw, RAW_SECTOR_SIZE)) {
++        memcpy(out, raw + RAW_USER_DATA_OFFSET, SECTOR_SIZE);
++        return 1;
++    }
++    return iso_read_sector(iso_handle, (uint32_t)lba, out, SECTOR_SIZE);
++}
++
+ /* Multi-disc roster, registered at launch from game.toml [game] discs.
+  * It lives here because the mount lives here, which keeps the disc-change
+  * entry point reachable from C without the launcher's C++ state. */
+@@ -1470,6 +1488,8 @@
+             memset(user_data, 0, sizeof(user_data));
+         }
+         if (subq_replacements_active) update_last_valid_subq((uint32_t)lba);
++        if (s_user_remap && s_user_remap(lba, user_data) && have_raw)
++            memcpy(raw_data + RAW_USER_DATA_OFFSET, user_data, SECTOR_SIZE);
+     } else {
+         memset(user_data, 0, sizeof(user_data));
+     }
